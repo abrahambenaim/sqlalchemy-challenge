@@ -1,4 +1,6 @@
-%matplotlib inline
+from matplotlib import style
+style.use('fivethirtyeight')
+import matplotlib.pyplot as plt
 from matplotlib import style
 style.use('fivethirtyeight')
 import matplotlib.pyplot as plt
@@ -13,7 +15,7 @@ from sqlalchemy import extract
 from sqlalchemy import and_
 from sqlalchemy import or_
 from mpl_toolkits.basemap import Basemap
-from flask import jsonify
+from flask import Flask, jsonify
 
 engine = create_engine("sqlite:////Users/cla/Desktop/UM Data Science/Homework/10 -sqlalchemy-challenge/Resources/hawaii.sqlite")
 Base = automap_base()
@@ -24,7 +26,7 @@ Station = Base.classes.station
 session = Session(engine)
 
 
-app = Flask(__trip__)
+app = Flask(__name__)
 
 @app.route('/')
 def home():
@@ -38,13 +40,13 @@ def precipitation():
     return jsonify(prcp_df)
 
 @app.route('/api/v1.0/stations')
-def stations()
+def stations():
     station_names = session.query(Station.station, Station.name, Station.latitude, Station.longitude, Station.elevation).all()
     station_names = pd.DataFrame(station_names)
     return jsonify(station_names)
 
 @app.route('/api/v1.0/tobs')
-def tobs()
+def tobs():
     last_date=session.query(Measurement.date).\
     order_by(Measurement.date.desc()).first()
 
@@ -63,7 +65,7 @@ def tobs()
     return jsonify(last_year_tobs_df)
 
 @app.route('/api/v1.0/<start>/<end>')
-def start()
+def start():
     dates = []
     start_date = input(f'Start date of your trip(yyyy-mm-dd)')
     end_date = input(f'End date of your trip(yyyy-mm-dd)') 
@@ -87,5 +89,5 @@ def start()
     trip_forecast_df = pd.DataFrame(trip, columns=['Date','Avg_Temp','Avg_Max_Temp','Avg_Min_Temp','Avg_Precipitation'])
     return jsonify(trip_forecast_df)
 
-if __trip__ == "__main__":
+if (__name__) == "__main__":
     app.run(debug=True)
