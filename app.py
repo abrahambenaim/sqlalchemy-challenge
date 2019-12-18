@@ -35,13 +35,13 @@ def precipitation():
     query_date = input(f'Please enter a day to search for historic precipitation (yyy-mm-dd)')
     prcp = session.query(Measurement.date,Measurement.station,Measurement.prcp).filter(Measurement.date>=query_date).order_by(Measurement.date).all()
     prcp_df = pd.DataFrame(last_year).set_index('date').dropna()
-    return print(prcp_df)
+    return jsonify(prcp_df)
 
 @app.route('/api/v1.0/stations')
 def stations()
     station_names = session.query(Station.station, Station.name, Station.latitude, Station.longitude, Station.elevation).all()
     station_names = pd.DataFrame(station_names)
-    return print(station_names)
+    return jsonify(station_names)
 
 @app.route('/api/v1.0/tobs')
 def tobs()
@@ -60,7 +60,7 @@ def tobs()
     order_by(Measurement.date).all()
 
     last_year_tobs_df = pd.DataFrame(last_year_tobs).set_index('date').dropna()
-    return print(last_year_tobs_df)
+    return jsonify(last_year_tobs_df)
 
 @app.route('/api/v1.0/<start>/<end>')
 def start()
@@ -85,4 +85,7 @@ def start()
 
 
     trip_forecast_df = pd.DataFrame(trip, columns=['Date','Avg_Temp','Avg_Max_Temp','Avg_Min_Temp','Avg_Precipitation'])
-    return trip_forecast_df
+    return jsonify(trip_forecast_df)
+
+if __trip__ == "__main__":
+    app.run(debug=True)
