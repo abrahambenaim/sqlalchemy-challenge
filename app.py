@@ -26,18 +26,32 @@ Station = Base.classes.station
 session = Session(engine)
 
 
+dates = []
+start_date = input(f'Start date of your trip(yyyy-mm-dd)')
+end_date = input(f'End date of your trip(yyyy-mm-dd)') 
+
+for date in start_date, end_date:
+    split_date=date.split('-')
+    dates.append(split_date)
+        
+start,end = dates
+
+start_year=(start[0]); start_month=(start[1]); start_day=(start[2])
+end_year=(end[0]); end_month=(end[1]); end_day=(end[2])
+
+
 app = Flask(__name__)
 
 @app.route('/')
 def home():
+    print(f'the possible routes are: ')
     return 'Welcome to my homepage'
 
 @app.route('/api/v1.0/precipitation')
 def precipitation():
-    query_date = input(f'Please enter a day to search for historic precipitation (yyy-mm-dd)')
+    query_date = 2015-12-12
     prcp = session.query(Measurement.date,Measurement.station,Measurement.prcp).filter(Measurement.date>=query_date).order_by(Measurement.date).all()
-    prcp_df = pd.DataFrame(last_year).set_index('date').dropna()
-    return jsonify(prcp_df)
+    return jsonify(prcp)
 
 @app.route('/api/v1.0/stations')
 def stations():
@@ -66,28 +80,13 @@ def tobs():
 
 @app.route('/api/v1.0/<start>/<end>')
 def start():
-    dates = []
-    start_date = input(f'Start date of your trip(yyyy-mm-dd)')
-    end_date = input(f'End date of your trip(yyyy-mm-dd)') 
 
-    for date in start_date, end_date:
-        split_date=date.split('-')
-        dates.append(split_date)
-        
-    start,end = dates
-
-    start_year=(start[0]); start_month=(start[1]); start_day=(start[2])
-    end_year=(end[0]); end_month=(end[1]); end_day=(end[2])
-
-    trip = session.query(Measurement.date,func.avg(Measurement.tobs),\
+    tripp_start = session.query(Measurement.date,func.avg(Measurement.tobs),\
     func.max(Measurement.tobs),func.min(Measurement.tobs),func.avg(Measurement.prcp)).\
     filter(or_(and_(extract('day', Measurement.date)>=start_day,extract('month', Measurement.date)==start_month),\
     (and_(extract('day', Measurement.date)<=end_day,extract('month', Measurement.date)==end_month)))).\
     group_by(Measurement.date).all()
-
-
-    trip_forecast_df = pd.DataFrame(trip, columns=['Date','Avg_Temp','Avg_Max_Temp','Avg_Min_Temp','Avg_Precipitation'])
-    return jsonify(trip_forecast_df)
+    return jsonify(tripp_start)
 
 if (__name__) == "__main__":
     app.run(debug=True)

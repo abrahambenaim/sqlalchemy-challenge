@@ -106,7 +106,7 @@ print(query_date)
 # In[11]:
 
 
-last_year = session.query(Measurement.date,Measurement.prcp).filter(Measurement.date>=query_date).order_by(Measurement.date).all()
+last_year = session.query(Measurement.date,Measurement.station,Measurement.prcp).filter(Measurement.date>=query_date).order_by(Measurement.date).all()
 
 last_year
 
